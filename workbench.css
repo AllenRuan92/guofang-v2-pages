@@ -1,0 +1,94 @@
+/* Task defaults stay beside the composer; the conversation keeps the space. */
+.task-notice { flex: 0 0 auto; margin: 0 30px 8px; }
+.task-settings-button { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 5px; align-self: center; padding: 5px 7px; margin: -5px -7px -5px 0; color: var(--gf-accent-text); background: transparent; border-radius: var(--gf-radius-control); font: 400 12px/16px var(--gf-font-ui); letter-spacing: 0; }
+.task-settings-button:hover { background: var(--gf-selected); }
+.composer-meta-right { margin-left: auto; }
+.task-settings-dialog { width: min(660px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); }
+.task-settings-dialog[open] { display: flex; flex-direction: column; }
+.task-settings-dialog .dialog-body { overflow-y: auto; min-height: 0; }
+.task-settings-note { margin: 0; color: var(--gf-muted); font-size: 12px; line-height: 16px; }
+.task-settings-actions { align-items: center; gap: 12px; }
+.task-settings-actions span { flex: 1; font-size: 12px; color: var(--gf-muted); line-height: 16px; }
+.legacy-task-options { border-top: 1px solid var(--gf-border); padding-top: 14px; font-size: 12px; color: var(--gf-muted); line-height: 16px; }
+.legacy-task-options summary, #taskFillOptions summary { cursor: pointer; }
+.legacy-task-options[open] > :not(summary) { margin-top: 12px; }
+.legacy-task-options select { width: 100%; padding: 8px; border: 1px solid var(--gf-border-strong); background: var(--gf-surface); color: var(--gf-text); border-radius: var(--gf-radius-control); }
+.config-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.config-fields:has(> .is-hidden):not(:has(> :not(.is-hidden))) { display: none; }
+.config-fields small { color: var(--gf-faint); line-height: 1.6; }
+.config-fields label { display: grid; align-content: start; min-width: 0; gap: 5px; font-size: 12px; color: var(--gf-muted); line-height: 16px; }
+.config-fields select, .config-fields input, .workbench-dialog select, .review-filters select, .review-filters input { width: 100%; min-width: 0; border: 1px solid var(--gf-border-strong); border-radius: var(--gf-radius-control); padding: 8px; background: var(--gf-surface); color: var(--gf-text); font-size: 12px; line-height: 16px; }
+.config-fields :disabled { color: var(--gf-muted); background: var(--gf-table-head); }
+#taskFillOptions { margin-top: 9px; font-size: 12px; color: var(--gf-muted); line-height: 16px; }
+#taskFillOptions[open] { display: grid; gap: 8px; }
+.checkbox-field { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+.workbench-dialog { width: min(1060px, calc(100vw - 32px)); max-height: calc(100vh - 40px); }
+.workbench-dialog[open], .review-dialog[open] { display: flex; flex-direction: column; }
+.workbench-body { overflow: auto; min-height: 0; }
+.profile-picker { display: flex; align-items: end; gap: 16px; }
+.profile-picker .field { flex: 1; }
+.profile-picker .status-chip { margin-bottom: 6px; }
+.workbench-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.workbench-columns > section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.workbench-columns .field textarea { min-height: 72px; }
+.workbench-columns #skillDraftInput { min-height: 150px; }
+.rule-inspector { border-left: 1px solid var(--gf-border); padding-left: 23px; }
+.rule-inspector details { border-top: 1px solid var(--gf-border); padding-top: 12px; }
+.rule-inspector summary { cursor: pointer; color: var(--gf-muted); font-size: 12px; line-height: 16px; }
+.rule-check-result { font-size: 12px; line-height: 16px; overflow-x: auto; }
+.check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.check-pass { color: var(--gf-success); background: var(--gf-success-bg); padding: 6px; border-radius: var(--gf-radius-control); }
+.check-fail { color: var(--gf-error); background: var(--gf-error-bg); padding: 6px; border-radius: var(--gf-radius-control); }
+.revision-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 0; font-size: 12px; border-bottom: 1px solid var(--gf-border); line-height: 16px; }
+.review-dialog { width: min(1280px, calc(100vw - 32px)); max-height: calc(100vh - 40px); }
+.review-dialog .dialog-body { min-height: 0; overflow: hidden; }
+.review-filters { display: grid; grid-template-columns: 180px minmax(180px, 1fr) auto; align-items: center; gap: 12px; }
+.review-filters span, #reviewVersion { color: var(--gf-muted); font-size: 12px; line-height: 16px; }
+.review-scroll { overflow: auto; max-height: 58vh; }
+.review-table { border-collapse: collapse; width: 100%; text-align: left; font-size: 14px; line-height: 20px; }
+.review-table th { position: sticky; top: 0; background: var(--gf-table-head); color: var(--gf-muted); z-index: 1; white-space: nowrap; }
+.review-table th, .review-table td { padding: 12px 16px; border-bottom: 1px solid var(--gf-border); vertical-align: top; }
+.review-table td { min-width: 75px; max-width: 300px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.review-table small { display: block; margin-top: 4px; color: var(--gf-muted); font-family: var(--gf-font-code); }
+.old-value { color: var(--gf-muted); }
+.new-value { color: var(--gf-accent-text); background: var(--gf-selected); font-variant-numeric: tabular-nums; }
+.run-events { list-style: none; margin: 0; padding: 0 0 0 10px; border-left: 2px solid var(--gf-border); }
+.run-events li { padding: 4px 0 14px 12px; font-size: 12px; line-height: 16px; }
+.run-events time { display: block; color: var(--gf-muted); margin-bottom: 6px; }
+.run-events pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--gf-table-head); padding: 10px; font-size: 12px; line-height: 16px; }
+.dialog-actions { flex-shrink: 0; }
+@media (max-width: 760px) {
+  .task-notice { margin: 0 12px 4px; }
+  .config-fields { grid-template-columns: 1fr; gap: 12px; }
+  .composer-meta > #composerModeHint { flex: 1; }
+  .workbench-columns { grid-template-columns: 1fr; gap: 18px; }
+  .rule-inspector { border-left: 0; padding-left: 0; }
+  .profile-picker { flex-direction: column; align-items: stretch; gap: 5px; }
+  .review-filters { grid-template-columns: 1fr; gap: 7px; }
+  .review-table { min-width: 800px; }
+  .workbench-dialog .review-table { min-width: 360px; }
+  .config-fields select, .config-fields input { padding: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+.review-table th { padding: 8px 16px; background: var(--gf-table-head); color: var(--gf-primary); }
+
+
+.config-fields select, .config-fields input, .workbench-dialog select,
+.review-filters select, .review-filters input, .legacy-task-options select,
+#pptContext .field select, .ppt-dialog .field select,
+#quarterlyContext input, #quarterlyContext select,
+.memory-dialog input:not([type=checkbox]), .memory-dialog select,
+.memory-dialog textarea, #taskMemoryFund {
+  min-height: var(--gf-control-height);
+  padding: 5px 11px;
+  font: 400 14px/20px var(--gf-font-ui);
+  color: var(--gf-text);
+  border-radius: var(--gf-radius-control);
+}
+@media (max-width: 820px) {
+  .config-fields select, .config-fields input, .workbench-dialog select,
+  #pptContext .field select, .ppt-dialog .field select,
+  #quarterlyContext input, #quarterlyContext select,
+  .memory-dialog input:not([type=checkbox]), .memory-dialog select { min-height: 44px; }
+}

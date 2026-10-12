@@ -1,0 +1,53 @@
+/* Semi foundation values with Guofang brand colors; see docs/guofang-ui-20261010. */
+/* Inter 4.1 is bundled under assets/fonts/Inter-LICENSE.txt (SIL OFL). */
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/InterVariable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --gf-primary: #00024c;
+  --gf-primary-hover: #151b69;
+  --gf-primary-pressed: #000137;
+  --gf-accent: #1aa8e9;
+  --gf-accent-text: #006fa6;
+  --gf-selected: #eaf7fe;
+  --gf-table-head: #edf1fe;
+  --gf-bg: #f6f8fc;
+  --gf-surface: #ffffff;
+  --gf-text: #1f2433;
+  --gf-muted: #667085;
+  --gf-faint: #8995ab;
+  --gf-border: #e1e6ef;
+  --gf-border-strong: #8995ab;
+  --gf-success: #137a54;
+  --gf-success-bg: #eaf6ef;
+  --gf-warning: #946000;
+  --gf-warning-bg: #fff5de;
+  --gf-error: #b42318;
+  --gf-error-bg: #fff0ed;
+  --gf-rail-text: #d0d5ed;
+  --gf-rail-muted: #bdc4e6;
+  --gf-rail-line: #303b78;
+  --gf-rail-hover: #101862;
+  --gf-rail-selected: #1a256e;
+  --gf-rail-warning: #ffe1a3;
+  --gf-rail-success: #a9d8bd;
+  --gf-rail-error: #ffc2bc;
+  --gf-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --gf-font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --gf-body-size: 14px;
+  --gf-body-line: 20px;
+  --gf-caption-size: 12px;
+  --gf-caption-line: 16px;
+  --gf-answer-line: 24px;
+  --gf-control-height: 32px;
+  --gf-radius-control: 3px;
+  --gf-radius-card: 6px;
+  --gf-radius-dialog: 12px;
+  --gf-focus-ring: 0 0 0 3px rgba(26, 168, 233, 0.24);
+  --gf-shadow: 0 0 1px rgba(0, 2, 76, 0.3), 0 4px 14px rgba(0, 2, 76, 0.1);
+}
