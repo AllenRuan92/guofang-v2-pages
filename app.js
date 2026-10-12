@@ -1,6 +1,6 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "f8f917a75f5e410cf630";
+const CLIENT_BUILD_ID = "24dc73364649721ece33";
 
 const state = {
   activeTaskId: "",
