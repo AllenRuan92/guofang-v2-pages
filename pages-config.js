@@ -1,1 +1,1 @@
-window.WENSHU_PAGES = Object.freeze({"appVersion":"2.2.2","buildId":"f8f917a75f5e410cf630","mode":"interface-test","backendConnected":false});
+window.WENSHU_PAGES = Object.freeze({"appVersion":"2.2.2","buildId":"24dc73364649721ece33","mode":"interface-test","backendConnected":false,"connectivityUrl":"https://guofangity-test-yyflugcpzb.cn-beijing.fcapp.run/health"});

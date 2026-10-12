@@ -46,6 +46,20 @@ function applyPagesState() {
 
 function pagesInfo() { openDialog("pagesInfoDialog"); }
 
+async function checkPagesConnection() {
+  const button = $("pagesCheckConnection"), result = $("pagesConnectionResult");
+  button.disabled = true;
+  result.textContent = "正在检测阿里云连接…";
+  try {
+    const response = await fetch(window.WENSHU_PAGES.connectivityUrl, { credentials: "omit", cache: "no-store", signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error("连接检测返回 " + response.status);
+    const data = await response.json();
+    if (data.service !== "guofang-v2-connectivity-test" || data.businessAvailable !== false) throw new Error("连接检测响应不符合测试约定");
+    result.textContent = data.message;
+  } catch { result.textContent = "暂时无法连接阿里云，请检查网络后重试。业务功能仍未接入。"; }
+  finally { button.disabled = false; }
+}
+
 async function initPagesTest() {
   // Do not open EventSource, fetch API routes or restore a local application's tasks.
   state.status = null;
@@ -68,6 +82,7 @@ async function initPagesTest() {
   $("credentialFields").classList.add("is-hidden");
   $("setupButton").onclick = pagesInfo;
   $("pagesInfoButton").onclick = pagesInfo;
+  $("pagesCheckConnection").onclick = checkPagesConnection;
   $("pagesBuild").textContent = "V2 " + window.WENSHU_PAGES.appVersion + " · " + window.WENSHU_PAGES.buildId;
   document.querySelector(".isolation-note span:last-child").textContent = "网上界面测试";
   document.querySelector(".runtime-list div:nth-child(2) dd").textContent = "浏览器测试";
