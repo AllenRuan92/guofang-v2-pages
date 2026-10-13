@@ -1,6 +1,6 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "fe4991f24dd03cac4ae5";
+const CLIENT_BUILD_ID = "07f44dd530eb6fa81bf5";
 const taskStorage = {
   getItem(key) { return localStorage.getItem(window.WenshuAccount?.storageKey(key) || key); },
   setItem(key, value) { localStorage.setItem(window.WenshuAccount?.storageKey(key) || key, value); }
@@ -460,7 +460,7 @@ function renderActiveTask() {
   const historyFailed = Boolean(task.threadId && task.historyLoadError);
   renderTaskConfig();
   state.mode = task.mode;
-  document.querySelectorAll(".mode-button").forEach((button) => {
+  document.querySelectorAll(".mode-button[data-mode]").forEach((button) => {
     button.classList.toggle("is-active", button.dataset.mode === task.mode);
   });
   $("modeKicker").textContent = task.mode === "fill" ? "DISCLOSURE MODE" : "QUERY MODE";
@@ -1991,7 +1991,7 @@ function resizeComposer() {
 }
 
 function bindEvents() {
-  document.querySelectorAll(".mode-button").forEach((button) => {
+  document.querySelectorAll(".mode-button[data-mode]").forEach((button) => {
     button.addEventListener("click", () => {
       if (button.dataset.mode === state.mode) {
         setSidebarOpen(false);

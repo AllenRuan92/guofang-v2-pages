@@ -33,7 +33,7 @@ window.WenshuAccount.ready = (async () => {
   const logout = document.createElement("button"); logout.textContent = "退出"; logout.type = "button"; logout.addEventListener("click", async () => { const r = await window.WenshuAccount.fetch("/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); if (r.ok) { localStorage.setItem("gf.account.logout", JSON.stringify({ userId: identity.user.id, at: Date.now() })); window.WenshuAccount.expired(); } }); bar.append(logout); document.body.prepend(bar); document.body.classList.add("has-account");
   for (const id of ["settingsButton", "headerSettingsButton"]) document.getElementById(id).hidden = true;
   document.querySelector(".isolation-note span:last-child").textContent = "当前账号独立工作区";
-  document.querySelectorAll(".mode-button").forEach(b => { const allowed = identity.user.permissions.includes(b.dataset.mode); b.disabled = !allowed; if (!allowed) b.title = "此账号未获该功能权限"; });
+  document.querySelectorAll(".mode-button[data-mode]").forEach(b => { const allowed = identity.user.permissions.includes(b.dataset.mode); b.disabled = !allowed; if (!allowed) b.title = "此账号未获该功能权限"; });
   for (const id of ["skillButton", "headerSkillButton"]) document.getElementById(id).hidden = !identity.user.permissions.includes("personalRules");
   document.getElementById("templateManagerButton").hidden = !identity.user.permissions.some(p => ["ppt", "quarterly"].includes(p));
   const enabled = identity.user.permissions.some(p => ["question", "fill", "ppt", "quarterly"].includes(p));
