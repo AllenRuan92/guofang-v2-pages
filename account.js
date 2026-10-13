@@ -1,6 +1,6 @@
 "use strict";
 const el = id => document.getElementById(id);
-const featureLabels = { question: "智能问数", fill: "信披填报", ppt: "PPT", quarterly: "季报", personalRules: "个人规则" };
+const featureLabels = { question: "智能问数", fill: "信披填报", ppt: "PPT", quarterly: "季报", personalRules: "个人规则", tax: "税务助手" };
 const roleLabels = { member: "同事", admin: "账号管理员", maintainer: "公共维护人（预留）" };
 const statusLabels = { active: "正常", pending: "待激活", disabled: "已停用" };
 let identity, users = [], editingId = null;
