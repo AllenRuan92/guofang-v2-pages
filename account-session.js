@@ -28,7 +28,9 @@ window.WenshuAccount.ready = (async () => {
   link("我的账户", "/account"); if (identity.user.roles.includes("admin")) link("用户管理", "/admin");
   if (identity.user.permissions.includes("tax")) {
     link("税务助手", "/tax/index.html");
-    const taxLink = document.createElement("a"); taxLink.className = "mode-button tax-entry"; taxLink.href = window.WenshuCloudPage("/tax/index.html"); taxLink.textContent = "税务助手"; document.querySelector(".mode-nav").append(taxLink);
+    const taxLink = document.createElement("a"); taxLink.className = "mode-button tax-entry"; taxLink.href = window.WenshuCloudPage("/tax/index.html");
+    const taxIcon = document.createElement("span"); taxIcon.className = "mode-icon"; taxIcon.setAttribute("aria-hidden", "true"); taxIcon.textContent = "§";
+    const taxLabel = document.createElement("span"); taxLabel.textContent = "税务助手"; taxLink.append(taxIcon, taxLabel); document.querySelector(".mode-nav").append(taxLink);
   }
   const logout = document.createElement("button"); logout.textContent = "退出"; logout.type = "button"; logout.addEventListener("click", async () => { const r = await window.WenshuAccount.fetch("/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }); if (r.ok) { localStorage.setItem("gf.account.logout", JSON.stringify({ userId: identity.user.id, at: Date.now() })); window.WenshuAccount.expired(); } }); bar.append(logout); document.body.prepend(bar); document.body.classList.add("has-account");
   for (const id of ["settingsButton", "headerSettingsButton"]) document.getElementById(id).hidden = true;
