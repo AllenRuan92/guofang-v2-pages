@@ -159,4 +159,18 @@ function bindWorkbench() {
   ["task-fund", "task-personal", "task-date", "task-fields", "task-overwrite"].forEach(key => $(key).onchange = saveTaskConfig);
   $("reviewSheet").onchange = renderFullReview; $("reviewSearch").oninput = renderFullReview;
   $("viewRunButton").onclick = openRunRecord;
+  if ($("exportProfile")) $("exportProfile").onclick = exportProfile;
+  if ($("importProfile")) $("importProfile").onchange = importProfile;
+}
+function exportProfile() {
+  const config = profileForm();
+  const blob = new Blob([JSON.stringify({ format: "guofang-personal-rule", version: 1, config }, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob), link = document.createElement("a"); link.href = url; link.download = "guofang-personal-rule.json"; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+async function importProfile(event) {
+  try {
+    const file = event.target.files[0]; if (!file) return; if (file.size > 100000) throw Error("规则文件过大");
+    const value = JSON.parse(await file.text()); if (value.format !== "guofang-personal-rule" || value.version !== 1 || !value.config) throw Error("请选择国方个人规则导出文件");
+    const profile = await profileRequest("draft", value.config); await loadWorkbench(); editProfile(profile.id); showToast("已导入为私人草稿，请核对后启用。");
+  } catch (e) { showToast(e.message, "error"); } finally { event.target.value = ""; }
 }

@@ -1,7 +1,8 @@
 {
+  "appId": "guofang-office-v2",
   "appVersion": "2.2.2",
-  "buildId": "24dc73364649721ece33",
-  "mode": "interface-test",
-  "backendConnected": false,
-  "connectivityUrl": "https://guofangity-test-yyflugcpzb.cn-beijing.fcapp.run/health"
+  "buildId": "687779dc348f47741ae1",
+  "apiOrigin": "https://guofangnt-proxy-fzqbqvazhn.cn-beijing.fcapp.run",
+  "basePath": "/guofang-v2-pages",
+  "mode": "account-pilot"
 }

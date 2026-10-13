@@ -1,6 +1,10 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "24dc73364649721ece33";
+const CLIENT_BUILD_ID = "687779dc348f47741ae1";
+const taskStorage = {
+  getItem(key) { return localStorage.getItem(window.WenshuAccount?.storageKey(key) || key); },
+  setItem(key, value) { localStorage.setItem(window.WenshuAccount?.storageKey(key) || key, value); }
+};
 
 const state = {
   activeTaskId: "",
@@ -160,8 +164,8 @@ function persistTasks() {
     updatedAt: task.updatedAt
   }));
   try {
-    localStorage.setItem("wenshu.pages-test.v2.tasks", JSON.stringify(records));
-    localStorage.setItem("wenshu.pages-test.v2.activeTaskId", state.activeTaskId || "");
+    taskStorage.setItem("wenshu.v2.tasks", JSON.stringify(records));
+    taskStorage.setItem("wenshu.v2.activeTaskId", state.activeTaskId || "");
   } catch {
     // A large browser storage quota should not block the main workflow.
   }
@@ -170,7 +174,7 @@ function persistTasks() {
 function restoreTasks() {
   let records = [];
   try {
-    records = JSON.parse(localStorage.getItem("wenshu.pages-test.v2.tasks") || "[]");
+    records = JSON.parse(taskStorage.getItem("wenshu.v2.tasks") || "[]");
   } catch {
     records = [];
   }
@@ -201,7 +205,7 @@ function restoreTasks() {
       task.busy = false;
     });
   }
-  const savedId = localStorage.getItem("wenshu.pages-test.v2.activeTaskId");
+  const savedId = taskStorage.getItem("wenshu.v2.activeTaskId");
   if (savedId && state.tasks.has(savedId)) state.activeTaskId = savedId;
   if (!activeTask()) state.activeTaskId = createTaskState("question").id;
 }
@@ -342,7 +346,7 @@ async function api(endpoint, options) {
   if (state.buildMismatch && !["/api/status", "/api/build"].includes(endpoint)) {
     throw new Error("应用文件已更新，但后台仍是旧版本。请关闭应用后重新启动 2.0 服务。");
   }
-  const response = await fetch(endpoint, options || {});
+  const response = window.WenshuAccount?.identity ? await window.WenshuAccount.fetch(endpoint, options || {}) : await fetch(endpoint, options || {});
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(payload.error || "请求失败");
@@ -560,6 +564,15 @@ function renderStatus(status) {
   const missingConfiguration = !status.hasApiKey || !status.mysqlConfigured;
   const missingRuntime = !status.codexReady || (status.mysqlConfigured && !status.mcpConfigured);
   const networkBlocked = credentialsReady && status.mcpConfigured && status.mysqlReachable === false;
+  if (status.databaseEnabled === false && status.hasApiKey && status.codexReady) {
+    $("setupBanner").classList.remove("is-hidden");
+    $("setupTitle").textContent = "云端试运行 · 数据库待验证";
+    $("setupMessage").textContent = "账户和 Agent 已连接。数据库查询暂未启用，待公司网络验证后开放基金问数与数据填报。";
+    $("setupButton").textContent = "重新检测";
+    $("runtimeDatabase").textContent = "待验证";
+    setRuntimeMessage("Agent 就绪 · 数据库待验证", "ready");
+    return;
+  }
   if (missingConfiguration || missingRuntime || networkBlocked) {
     $("setupBanner").classList.remove("is-hidden");
     $("setupTitle").textContent = missingConfiguration ? "应用连接信息未就绪" : missingRuntime ? "应用组件未就绪" : "数据库暂时无法连接";
@@ -1562,7 +1575,7 @@ function handleEvent(event) {
 }
 
 function connectEvents() {
-  const source = new EventSource("/api/events");
+  const source = new EventSource("/api/events" + (window.WenshuAccount?.identity ? "?accountUser=" + encodeURIComponent(window.WenshuAccount.identity.user.id) : ""));
   source.onopen = async () => {
     try {
       const build = await api("/api/build");
@@ -1582,6 +1595,7 @@ function connectEvents() {
   };
   source.onerror = () => {
     source.close();
+    window.WenshuAccount?.verify();
     setTimeout(connectEvents, 1800);
   };
 }
@@ -1643,7 +1657,7 @@ async function createThread(mode, options) {
   task.runtimeMessage = "连接就绪";
   touchTask(task);
   persistTasks();
-  localStorage.setItem("wenshu.pages-test.v2.threadId", task.threadId);
+  taskStorage.setItem("wenshu.v2.threadId", task.threadId);
   await loadThreads();
   if (task.id === state.activeTaskId) {
     renderActiveTask();
@@ -1734,7 +1748,7 @@ async function loadThread(threadId, options) {
     if (!settings.keepCurrentTask || state.activeTaskId === task.id) selectTask(task.id);
     await refreshTaskRecord(task);
     syncFillStateFromTurns(task);
-    if (task.id === state.activeTaskId) localStorage.setItem("wenshu.pages-test.v2.threadId", task.threadId);
+    if (task.id === state.activeTaskId) taskStorage.setItem("wenshu.v2.threadId", task.threadId);
     persistTasks();
     if (task.id === state.activeTaskId) renderActiveTask();
     renderThreads();
@@ -2110,12 +2124,19 @@ function bindEvents() {
 }
 
 async function init() {
+  if (window.WenshuAccount && !await window.WenshuAccount.ready) return;
   bindEvents();
   bindWorkbench();
   bindMemoryWorkbench();
   bindPpt();
   bindQuarterly();
   restoreTasks();
+  if (window.WenshuAccount?.identity) {
+    const permissions = window.WenshuAccount.identity.user.permissions;
+    for (const [id, task] of state.tasks) if (!permissions.includes(task.mode)) state.tasks.delete(id);
+    if (!state.tasks.size) { const mode = ["question", "fill", "ppt", "quarterly"].find(p => permissions.includes(p)); const task = createTaskState(mode); state.tasks.set(task.id, task); state.activeTaskId = task.id; }
+    if (!state.tasks.has(state.activeTaskId)) state.activeTaskId = state.tasks.keys().next().value;
+  }
   setMode(ensureActiveTask().mode, false);
   renderFile();
   renderOutputs();
@@ -2134,10 +2155,10 @@ async function init() {
     state.defaultModel = status.selectedModel || state.defaultModel;
     renderStatus(status);
     renderActiveTask();
-    await loadWorkbench();
+    if (!window.WenshuAccount?.identity || window.WenshuAccount.identity.user.permissions.includes("personalRules")) await loadWorkbench();
     const threads = status.hasApiKey && status.codexReady ? await loadThreads() : [];
     const restored = activeTask();
-    const saved = localStorage.getItem("wenshu.pages-test.v2.threadId");
+    const saved = taskStorage.getItem("wenshu.v2.threadId");
     const savedThread = threads.find((thread) =>
       thread.id === saved && (!restored || threadMode(thread) === restored.mode)
     );
@@ -2157,4 +2178,4 @@ async function init() {
   }
 }
 
-// Local initialization is replaced by pages-test.js in this export.
+init();

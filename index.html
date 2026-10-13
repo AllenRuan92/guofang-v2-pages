@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="./ppt-workbench.css" />
     <link rel="stylesheet" href="./quarterly-workbench.css" />
     <link rel="stylesheet" href="./memory-workbench.css" />
-  <link rel="stylesheet" href="./pages-test.css" />
-  </head>
+  <meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://guofangnt-proxy-fzqbqvazhn.cn-beijing.fcapp.run; base-uri 'none'; form-action 'self'"><script src="./cloud-config.js"></script><script src="./cloud-transport.js"></script><link rel="stylesheet" href="./account.css"></head>
   <body>
     <div id="appShell" class="app-shell">
       <button id="sidebarScrim" class="sidebar-scrim" type="button" aria-label="关闭侧栏"></button>
@@ -72,7 +71,6 @@
             <span class="action-icon" aria-hidden="true">⚙</span>
             <span>连接设置</span>
           </button>
-          <button id="pagesInfoButton" class="pages-test-button" type="button">网上测试说明</button>
           <div class="isolation-note">
             <span class="status-dot quiet"></span>
             <span>本机独立运行</span>
@@ -267,7 +265,7 @@
           <details class="base-details"><summary>公共规则 · 只读</summary><textarea id="skillBasePreview" rows="12" readonly></textarea></details>
         </section></div>
       </div>
-      <div class="dialog-actions"><button id="resetSkillButton" class="outline-button" type="button">新建配置</button><span class="action-spacer"></span><button id="saveSkillDraftButton" class="outline-button" type="button">保存草稿</button><button id="activateSkillButton" class="primary-button" type="button">检查并启用</button></div>
+      <div class="dialog-actions"><button id="resetSkillButton" class="outline-button" type="button">新建配置</button><button id="exportProfile" class="outline-button" type="button">导出规则</button><label class="outline-button" style="cursor:pointer">导入规则<input id="importProfile" type="file" accept=".json" hidden /></label><span class="action-spacer"></span><button id="saveSkillDraftButton" class="outline-button" type="button">保存草稿</button><button id="activateSkillButton" class="primary-button" type="button">检查并启用</button></div>
     </dialog>
     <dialog id="reviewDialog" class="app-dialog review-dialog">
       <div class="dialog-header"><div><div class="section-label">填报核对</div><h2>全部变更</h2><p id="reviewVersion"></p></div><button class="dialog-close" data-close-dialog="reviewDialog" type="button" aria-label="关闭">×</button></div>
@@ -330,17 +328,14 @@
         <div class="memory-filters"><input id="memorySearch" type="search" placeholder="搜索偏好或基金" aria-label="搜索记忆" /><select id="memorySceneFilter" aria-label="筛选场景"><option value="">全部场景</option><option value="question">问数</option><option value="fill">信披</option><option value="ppt">PPT</option><option value="quarterly">季报</option></select><button id="memoryAdd" class="outline-button" type="button">添加偏好</button></div>
         <small id="memoryCount"></small><div id="memoryEntries"></div>
         <section id="memoryEditor" class="is-hidden"><h3 id="memoryEditorTitle">修改偏好</h3><label class="field"><span>偏好类型</span><select id="memoryType"></select></label><label id="memoryValueField" class="field"></label><fieldset class="memory-scopes"><legend>适用场景</legend><label><input type="checkbox" name="memoryScope" value="question" checked />问数</label><label><input type="checkbox" name="memoryScope" value="fill" checked />信披</label><label><input type="checkbox" name="memoryScope" value="ppt" checked />PPT</label><label><input type="checkbox" name="memoryScope" value="quarterly" checked />季报</label></fieldset><label class="field"><span>限定基金（留空表示不限基金）</span><input id="memoryFund" maxlength="200" placeholder="基金名称须与本任务基金一致" /></label><div class="dialog-actions"><button id="memoryCancel" type="button" class="outline-button">取消</button><button id="memorySave" type="button" class="primary-button">保存偏好</button></div></section>
-        <p class="memory-intro">记忆保存在本机当前用户的数据目录。忘记后不再自动使用，原对话和已确认文件仍保留。表达习惯以外的业务流程请在“规则工作台”管理。</p>
+        <p class="memory-intro">记忆保存在云端当前账号的私人目录。忘记后不再自动使用，原对话和已确认文件仍保留。表达习惯以外的业务流程请在“规则工作台”管理。</p>
       </div>
     </dialog>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<dialog id="pagesInfoDialog" class="app-dialog"><div class="dialog-header"><div><h2>V2 网上界面测试</h2></div><button class="dialog-close" data-close-dialog="pagesInfoDialog" type="button" aria-label="关闭">×</button></div><div class="dialog-body"><p>本页面来自当前 V2，可查看智能问数、信披填报、PPT 制作和直投基金季报四种工作模式。</p><p>阿里云业务后端尚未连接。本轮验证页面加载与操作布局；问数、材料上传、规则保存、文件生成和历史恢复暂不可用。</p><p>新建任务与临时设置只保存在此浏览器，不会同步到本机应用或其他用户。</p><p class="pages-test-note">此网站仅发布界面资源；业务规则、数据库配置、上传材料和输出文件保留在后端。</p><p><button id="pagesCheckConnection" class="outline-button" type="button">测试阿里云连接</button></p><p id="pagesConnectionResult" role="status">点击测试后仅向独立 FC 函数发送连接检测，不发送问题或材料。</p><p id="pagesBuild"></p></div><div class="dialog-actions"><button class="outline-button" data-close-dialog="pagesInfoDialog" type="button">关闭</button></div></dialog>
-    <script src="./pages-config.js"></script>
-    <script src="./workbench.js"></script>
+    <script src="./account-session.js"></script><script src="./workbench.js"></script>
     <script src="./ppt-workbench.js"></script>
     <script src="./quarterly-workbench.js"></script>
     <script src="./memory-workbench.js"></script>
     <script src="./app.js"></script>
-  <script src="./pages-test.js"></script>
   </body>
 </html>
