@@ -1,6 +1,6 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "39f045335fb2296d89ec";
+const CLIENT_BUILD_ID = "1e924df5e65d0339c810";
 const taskStorage = {
   getItem(key) { return localStorage.getItem(window.WenshuAccount?.storageKey(key) || key); },
   setItem(key, value) { localStorage.setItem(window.WenshuAccount?.storageKey(key) || key, value); }
@@ -1037,7 +1037,7 @@ function questionTimingMarkup(turn) {
   const label = Number.isFinite(turn.clientTotalMs) ? "总等待 " + seconds(turn.clientTotalMs) : "服务端耗时 " + seconds(timing.serverTotalMs);
   return '<details class="trace-panel question-timing"><summary><span class="trace-title">' + label + '</span><span class="trace-count">耗时明细</span></summary><div class="trace-list">' +
     rows.map(([name, duration]) => '<div class="trace-item">' + name + '：' + seconds(duration) + '</div>').join("") +
-    '<div class="trace-item">规则读取 ' + timing.toolCounts.rules + ' 次 · SQL ' + timing.toolCounts.sql + ' 次</div>' +
+    '<div class="trace-item">规则读取 ' + timing.toolCounts.rules + ' 次 · SQL ' + timing.toolCounts.sql + ' 次' + (timing.toolFailures?.sql ? '（失败 ' + timing.toolFailures.sql + ' 次）' : '') + '</div>' +
     '<div class="trace-item">模型与等待包含网络和上下文处理；规则仅统计可观测的读取工具。' +
     (timing.answerTimingBasis === "unobserved" ? '本轮未观测到答案流起点，生成耗时无法单独确定。' : '') +
     (timing.missingToolStarts || timing.incompleteTools ? '部分工具计时不完整。' : '') + '</div></div></details>';
