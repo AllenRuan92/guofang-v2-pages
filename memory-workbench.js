@@ -79,7 +79,7 @@ function bindMemoryReceipts(root) {
   });
 }
 async function captureMemoryMessage(task, text) {
-  if (!/^(?:请|帮我|麻烦)?\s*(?:以后|今后|从现在起|记住|默认|我(?:更)?喜欢|这次|本次|当前任务|忘记|不要再记|取消.{0,12}偏好)/.test(text)) return false;
+  if (!wenshuPreferenceIntent(text)) return false;
   task.memoryRequestId = "memory-request-" + crypto.randomUUID();
   setBusy(true, task);
   try {

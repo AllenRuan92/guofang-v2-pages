@@ -1,6 +1,6 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "54ffc775a1abf5f9bfba";
+const CLIENT_BUILD_ID = "be5d19fe350b393f887d";
 const taskStorage = {
   getItem(key) { return localStorage.getItem(window.WenshuAccount?.storageKey(key) || key); },
   setItem(key, value) { localStorage.setItem(window.WenshuAccount?.storageKey(key) || key, value); }
@@ -1027,6 +1027,22 @@ function outputCardsMarkup(files, compact) {
   return (Array.isArray(files) ? files : []).map((file) => outputCardMarkup(file, compact)).join("");
 }
 
+function questionTimingMarkup(turn) {
+  const timing = turn.questionTiming;
+  if (!timing) return "";
+  const seconds = value => (Math.max(0, Number(value) || 0) / 1000).toFixed(1) + "秒";
+  const preparation = (turn.browserPreparationMs || 0) + timing.phasesMs.preparation;
+  const rows = [["准备", preparation], ["模型与等待", timing.phasesMs.model], ["规则读取", timing.phasesMs.rules], ["SQL", timing.phasesMs.sql], ["生成答案", timing.phasesMs.answer], ["其他工具", timing.phasesMs.otherTools]];
+  if (Number.isFinite(turn.clientTotalMs)) rows.push(["网络与页面", Math.max(0, turn.clientTotalMs - (turn.browserPreparationMs || 0) - timing.serverTotalMs)]);
+  const label = Number.isFinite(turn.clientTotalMs) ? "总等待 " + seconds(turn.clientTotalMs) : "服务端耗时 " + seconds(timing.serverTotalMs);
+  return '<details class="trace-panel question-timing"><summary><span class="trace-title">' + label + '</span><span class="trace-count">耗时明细</span></summary><div class="trace-list">' +
+    rows.map(([name, duration]) => '<div class="trace-item">' + name + '：' + seconds(duration) + '</div>').join("") +
+    '<div class="trace-item">规则读取 ' + timing.toolCounts.rules + ' 次 · SQL ' + timing.toolCounts.sql + ' 次</div>' +
+    '<div class="trace-item">模型与等待包含网络和上下文处理；规则仅统计可观测的读取工具。' +
+    (timing.answerTimingBasis === "unobserved" ? '本轮未观测到答案流起点，生成耗时无法单独确定。' : '') +
+    (timing.missingToolStarts || timing.incompleteTools ? '部分工具计时不完整。' : '') + '</div></div></details>';
+}
+
 function renderTurn(turn, index, target) {
   const task = target || activeTask();
   const turnId = escapeHtml(turn.id);
@@ -1070,7 +1086,7 @@ function renderTurn(turn, index, target) {
   return '<article class="turn-group" data-turn-index="' + index + '">' + userMarkup +
     '<div class="agent-turn"><div class="turn-avatar agent" aria-hidden="true">G</div><div class="turn-main agent-body">' +
     '<div class="turn-label">国方 Agent<span class="agent-meta">' + escapeHtml(statusText) + "</span></div>" +
-    traceMarkup + '<div class="answer-block' + pendingClass + '">' + answerMarkup + "</div></div></div></article>";
+    traceMarkup + '<div class="answer-block' + pendingClass + '">' + answerMarkup + "</div>" + questionTimingMarkup(turn) + "</div></div></article>";
 }
 
 function isNearBottom(element) {
@@ -1421,6 +1437,12 @@ function handleEvent(event) {
     persistTasks(); renderTaskAfterEvent(task); return;
   }
 
+  if (method === "app/questionTiming") {
+    const turn = findTurn(params.turnId, true, task);
+    turn.questionTiming = params.timing;
+    touchTask(task); persistTasks(); renderTaskAfterEvent(task); return;
+  }
+
   if (method === "turn/started") {
     const turnId = params.turn && params.turn.id ? params.turn.id : params.turnId;
     const turn = findTurn(turnId, true, task);
@@ -1504,6 +1526,7 @@ function handleEvent(event) {
     const completedPhase = task.pendingPhase;
     turn.status = turnInfo.status || "completed";
     turn.completedAt = turnInfo.completedAtMs || turnInfo.completedAt || Date.now();
+    if (turn.clientClockOrigin === performance.timeOrigin && Number.isFinite(turn.clientStartedAt)) turn.clientTotalMs = Math.max(0, performance.now() - turn.clientStartedAt);
     if (task.pendingTurn === turn) task.pendingTurn = null;
     task.pendingPhase = "";
     if (task.mode === "fill" && completedPhase !== "commit") {
@@ -1698,6 +1721,10 @@ async function loadThread(threadId, options) {
       record = response.data || {};
       thread = record.thread || record;
       loadedTurns = extractHistory(record, task);
+      for (const timing of record.questionTimings || []) {
+        const turn = loadedTurns.find(t => t.id === timing.turnId);
+        if (turn) turn.questionTiming = timing;
+      }
       if (loadedTurns.length || !hasHistoryHint(thread) || attempt === 1) break;
       await new Promise((resolve) => setTimeout(resolve, 650));
     }
@@ -1774,6 +1801,7 @@ async function loadThread(threadId, options) {
 }
 
 async function sendMessage(phase, options) {
+  const clientStartedAt = performance.now();
   const settings = options || {};
   const task = settings.targetTask || activeTask();
   if (!task || task.busy) return;
@@ -1815,6 +1843,8 @@ async function sendMessage(phase, options) {
       ? "补充确认：" + originalText
       : originalText;
   const turn = newTurn("pending-" + Date.now(), task);
+  turn.clientStartedAt = clientStartedAt;
+  turn.clientClockOrigin = performance.timeOrigin;
   turn.user = displayText;
   turn.userAt = Date.now();
   turn.status = "starting";
@@ -1834,6 +1864,7 @@ async function sendMessage(phase, options) {
   setRuntimeMessage("发送中", undefined, task);
   persistTasks();
   try {
+    turn.browserPreparationMs = performance.now() - clientStartedAt;
     const response = await api("/api/messages", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
