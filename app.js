@@ -1,6 +1,6 @@
 "use strict";
 
-const CLIENT_BUILD_ID = "a6e0c98de30681446873";
+const CLIENT_BUILD_ID = "c634a024a4c37962b2fd";
 const taskStorage = {
   getItem(key) { return localStorage.getItem(window.WenshuAccount?.storageKey(key) || key); },
   setItem(key, value) { localStorage.setItem(window.WenshuAccount?.storageKey(key) || key, value); }
